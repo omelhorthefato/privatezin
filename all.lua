@@ -186,7 +186,8 @@ end)
 
 macro(100, function()
     if hasHaste() then return; end
-    if level() < 100 then
+    if level() < 10 then return; end
+    if level() > 100 then
         say('super speed')
     else
         say('speed up')
