@@ -132,6 +132,22 @@ local scriptCombo = macro(100, "Combo", function()
     end
 end)
 
+addTextEdit("Spells", storage.Spellss or "", function(widget, text)
+  storage.Spellss = text
+end) 
+
+function sayMultipleSpells(spells)
+  splitSpells = spells:split(",");
+    for _, spell in ipairs(splitSpells) do
+      say(spell)
+    end
+end
+
+macro(200, "Ataque", function()
+  if not g_game.isAttacking() then return; end
+  sayMultipleSpells(storage.Spellss)
+end)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------- [[ UTILITES ]] --------------------------------------------------------------------------------
