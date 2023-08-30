@@ -97,7 +97,7 @@ onTextMessage(function(mode, text)
             vocacaoLogada = Config.Setup[vocation]
             modules.game_textmessage.displayGameMessage('Voc�o encontrada e definida, voca��o: ' .. vocation)
 	    else
-            modules.game_textmessage.displayGameMessage('Voc�o não encontrada.')
+            modules.game_textmessage.displayGameMessage('V')
             local notFound = true
         end
     end
