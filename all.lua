@@ -68,7 +68,10 @@ Config.Setup = {
     },
 }
 
+local notFound = false;
+
 checkVoc = macro(100, function()
+    if notFund then return; end
     if not vocacaoLogada then
         g_game.look(player)
     else
@@ -96,8 +99,14 @@ onTextMessage(function(mode, text)
             vocacaoLogada = Config.Setup[vocation]
             modules.game_textmessage.displayGameMessage('Voc�o encontrada e definida, voca��o: ' .. vocation)
         end
+        if not Config.Setup[vocation] then
+            modules.game_textmessage.displayGameMessage('Vocação não encontrada.')
+            notFound = true;
+        end
     end
 end)
+
+
 
 
 
