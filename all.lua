@@ -153,6 +153,7 @@ end)
 
 macro(100, "Mystic Full", function()
     if isInPz() then return; end
+    if level() < 75 then return; end
     say('mystic defense')
     delay(2500)
 end)
