@@ -70,13 +70,10 @@ Config.Setup = {
 
 local notFound = false
 
-checkVoc = macro(100, function()
+ macro(100, function()
     if notFound then return; end
-    if not vocacaoLogada then
-        g_game.look(player)
-    else
-        checkVoc.setOff()
-    end
+    if vocacaoLogada then return; end
+    g_game.look(player)
 end)
 
 --You see você mesmo. Você é Super Uub Reborn.
