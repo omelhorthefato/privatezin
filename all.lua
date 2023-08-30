@@ -93,6 +93,7 @@ vocacaoLogada = nil
 
 onTextMessage(function(mode, text)
     if vocacaoLogada then return; end
+    if notFund then return; end
     if text:find('You see') then
         local vocation = getVocationFromString(text)
         if vocation then
@@ -100,7 +101,7 @@ onTextMessage(function(mode, text)
             modules.game_textmessage.displayGameMessage('Voc�o encontrada e definida, voca��o: ' .. vocation)
         end
         if not Config.Setup[vocation] then
-            modules.game_textmessage.displayGameMessage('Vocação não encontrada.')
+            modules.game_textmessage.displayGameMessage('Voc�o não encontrada.')
             notFound = true;
         end
     end
