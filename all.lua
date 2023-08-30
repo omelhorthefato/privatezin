@@ -1,3 +1,5 @@
+local logoutDeaths = 10
+
 local Config = {}
 
 Config.Setup = {
@@ -68,13 +70,8 @@ Config.Setup = {
     },
 }
 
-local notFound = false
+checkVoc = false
 
- macro(100, function()
-    if notFound then return; end
-    if vocacaoLogada then return; end
-    g_game.look(player)
-end)
 
 --You see você mesmo. Você é Super Uub Reborn.
 
@@ -95,12 +92,19 @@ onTextMessage(function(mode, text)
         local vocation = getVocationFromString(text)
         if vocation then
             vocacaoLogada = Config.Setup[vocation]
-            modules.game_textmessage.displayGameMessage('Voc�o encontrada e definida, voca��o: ' .. vocation)
-	    else
-            modules.game_textmessage.displayGameMessage('V')
-            local notFound = true
+            modules.game_textmessage.displayGameMessage('Voc?o encontrada e definida, voca??o: ' .. vocation)
+      else
+            modules.game_textmessage.displayGameMessage('Vocation not find.')
         end
     end
+end)
+
+macro(100, function()
+    if vocacaoLogada then return; end
+    if not checkVoc then
+        g_game.look(player)
+    end
+    checkVoc = true
 end)
 
 
@@ -237,7 +241,7 @@ bugMap.checkBox.onCheckChange = function(widget, checked)
 end
 
 if storage.bugMapCheck == nil then
-	storage.bugMapCheck = true;
+  storage.bugMapCheck = true;
 end
 
 bugMap.checkBox:setChecked(storage.bugMapCheck);
@@ -262,12 +266,12 @@ bugMap.macro = macro(1, "Bug Map", function()
         if (bugMap.isKeyPressed(key)) then
             if (storage.bugMapCheck or config.direction) then
                 if (config.direction) then
-					turn(config.direction);
-				end
+          turn(config.direction);
+        end
                 local tile = g_map.getTile({x = pos.x + config.x, y = pos.y + config.y, z = pos.z});
                 if (tile) then
-					return g_game.use(tile:getTopUseThing());
-				end
+          return g_game.use(tile:getTopUseThing());
+        end
             end
         end
     end
@@ -295,12 +299,12 @@ macro(1, function()
             modules.game_bot.g_adaptiveRenderer.setLevel(4)
             modules.game_bot.g_app.setSmooth()
             modules.game_bot.g_app.setMaxFps(5)
-		high_ram = false
+    high_ram = false
         else
             modules.game_bot.g_adaptiveRenderer.setLevel(0)
             modules.game_bot.g_app.setSmooth("false")
             modules.game_bot.g_app.setMaxFps(60)
-	high_ram = true
+  high_ram = true
         end
 end)
 
@@ -342,24 +346,24 @@ local isMobile = modules._G.g_app.isMobile();
 g_keyboard = g_keyboard or modules.corelib.g_keyboard;
 
 local isDragKeyPressed = function()
-	return isMobile and g_keyboard.isKeyPressed("F2") or g_keyboard.isCtrlPressed();
+  return isMobile and g_keyboard.isKeyPressed("F2") or g_keyboard.isCtrlPressed();
 end
 
 antiRedTimeWidget.onDragEnter = function(widget, mousePos)
-	if (not isDragKeyPressed()) then return; end
-	widget:breakAnchors();
-	local widgetPos = widget:getPosition();
-	widget.movingReference = {x = mousePos.x - widgetPos.x, y = mousePos.y - widgetPos.y};
-	return true;
+  if (not isDragKeyPressed()) then return; end
+  widget:breakAnchors();
+  local widgetPos = widget:getPosition();
+  widget.movingReference = {x = mousePos.x - widgetPos.x, y = mousePos.y - widgetPos.y};
+  return true;
 end
 
 antiRedTimeWidget.onDragMove = function(widget, mousePos, moved)
-	local parentRect = widget:getParent():getRect();
-	local x = math.min(math.max(parentRect.x, mousePos.x - widget.movingReference.x), parentRect.x + parentRect.width - widget:getWidth());
-	local y = math.min(math.max(parentRect.y - widget:getParent():getMarginTop(), mousePos.y - widget.movingReference.y), parentRect.y + parentRect.height - widget:getHeight());   
-	widget:move(x, y);
-	storage.widgetPos.antiRedTime = {x = x, y = y};
-	return true;
+  local parentRect = widget:getParent():getRect();
+  local x = math.min(math.max(parentRect.x, mousePos.x - widget.movingReference.x), parentRect.x + parentRect.width - widget:getWidth());
+  local y = math.min(math.max(parentRect.y - widget:getParent():getMarginTop(), mousePos.y - widget.movingReference.y), parentRect.y + parentRect.height - widget:getHeight());   
+  widget:move(x, y);
+  storage.widgetPos.antiRedTime = {x = x, y = y};
+  return true;
 end
 
 local name = "antiRedTime";
@@ -367,76 +371,76 @@ storage.widgetPos[name] = storage.widgetPos[name] or {};
 antiRedTimeWidget:setPosition({x = storage.widgetPos[name].x or 50, y = storage.widgetPos[name].y or 50});
 
 if (not getSpectators or #getSpectators(true) == 0) then
-	getSpectators = function()
-		local specs = {};
-		local tiles = g_map.getTiles(posz());
-		for i = 1, #tiles do
-			local tile = tiles[i];
-			local creatures = tile:getCreatures();
-			for _, spec in ipairs(creatures) do
-				table.insert(specs, creature);
-			end
-		end
-		return specs;
-	end
+  getSpectators = function()
+    local specs = {};
+    local tiles = g_map.getTiles(posz());
+    for i = 1, #tiles do
+      local tile = tiles[i];
+      local creatures = tile:getCreatures();
+      for _, spec in ipairs(creatures) do
+        table.insert(specs, creature);
+      end
+    end
+    return specs;
+  end
 end
 
 if (not storage.antiRedTime or storage.antiRedTime - 30000 > now) then
-	storage.antiRedTime = 0;
+  storage.antiRedTime = 0;
 end
 
 local addAntiRedTime = function()
-	storage.antiRedTime = now + 30000;
+  storage.antiRedTime = now + 30000;
 end
 
 local toInteger = function(number)
-	number = tostring(number);
-	number = number:split(".");
-	return tonumber(number[1]);
+  number = tostring(number);
+  number = number:split(".");
+  return tonumber(number[1]);
 end
 
 
 
 macro(1, "Anti-Red", function()
     if not vocacaoLogada then return; end
-	local pos, monstersCount = pos(), 0;
-	if (player:getSkull() >= 3) then
-		addAntiRedTime();
-	end
-	local specs = getSpectators(true);
+  local pos, monstersCount = pos(), 0;
+  if (player:getSkull() >= 3) then
+    addAntiRedTime();
+  end
+  local specs = getSpectators(true);
     for _, spell in ipairs(vocacaoLogada.AntiRed) do
-	for _, spec in ipairs(specs) do
-		local specPos = spec:getPosition();
-		local floorDiff = math.abs(specPos.z - pos.z);
-		if (floorDiff > 3) then 
-			goto continue;
-		end
-		if (spec ~= player and spec:isPlayer() and spec:getEmblem() ~= 1 and spec:getShield() < 3) then
-			addAntiRedTime();
-			break
-		elseif (floorDiff == 0 and spec:isMonster() and getDistanceBetween(specPos, pos) == 1) then
-			monstersCount = monstersCount + 1;
-		end
-		::continue::
-	end
-	if (storage.antiRedTime >= now) then
-		antiRedTimeWidget:show();
-		local diff = storage.antiRedTime - now;
-		diff = diff / 1000;
-		antiRedTimeWidget:setText(tr("Area blocked for %ds.", toInteger(diff)));
-		antiRedTimeWidget:setColor("red");
-	elseif (not antiRedTimeWidget:isHidden()) then
-		antiRedTimeWidget:hide();
-	end
-	if (monstersCount > 1 and storage.antiRedTime < now) then
-		return say(spell.areaSpell);
-	end
-	if (not g_game.isAttacking()) then return; end
+  for _, spec in ipairs(specs) do
+    local specPos = spec:getPosition();
+    local floorDiff = math.abs(specPos.z - pos.z);
+    if (floorDiff > 3) then 
+      goto continue;
+    end
+    if (spec ~= player and spec:isPlayer() and spec:getEmblem() ~= 1 and spec:getShield() < 3) then
+      addAntiRedTime();
+      break
+    elseif (floorDiff == 0 and spec:isMonster() and getDistanceBetween(specPos, pos) == 1) then
+      monstersCount = monstersCount + 1;
+    end
+    ::continue::
+  end
+  if (storage.antiRedTime >= now) then
+    antiRedTimeWidget:show();
+    local diff = storage.antiRedTime - now;
+    diff = diff / 1000;
+    antiRedTimeWidget:setText(tr("Area blocked for %ds.", toInteger(diff)));
+    antiRedTimeWidget:setColor("red");
+  elseif (not antiRedTimeWidget:isHidden()) then
+    antiRedTimeWidget:hide();
+  end
+  if (monstersCount > 1 and storage.antiRedTime < now) then
+    return say(spell.areaSpell);
+  end
+  if (not g_game.isAttacking()) then return; end
         local saySpells = spell.targetSpells:split(',');
         for _, targetSpell in ipairs(saySpells) do
         say(targetSpell);
         end
-	end
+  end
 end)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
