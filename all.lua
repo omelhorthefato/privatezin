@@ -240,9 +240,9 @@ onTalk(function(name, level, mode, text, channelId, pos)
         end
     end
     if text == 'big regeneration' then
-        s.cdRegen = now + 1000
+        Config.cdRegen = now + 1000
     elseif text == 'aaahhh! muito melhor!' then
-        s.cdSenzu = now + 1500
+        Config.cdSenzu = now + 1500
     end
 end)
 
