@@ -71,7 +71,7 @@ Config.Setup = {
 local notFound = false;
 
 checkVoc = macro(100, function()
-    if notFund then return; end
+    if notFound then return; end
     if not vocacaoLogada then
         g_game.look(player)
     else
@@ -93,7 +93,7 @@ vocacaoLogada = nil
 
 onTextMessage(function(mode, text)
     if vocacaoLogada then return; end
-    if notFund then return; end
+    if notFound then return; end
     if text:find('You see') then
         local vocation = getVocationFromString(text)
         if vocation then
