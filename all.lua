@@ -103,8 +103,8 @@ macro(100, function()
     if vocacaoLogada then return; end
     if not checkVoc then
         g_game.look(player)
+         checkVoc = true
     end
-    checkVoc = true
 end)
 
 
@@ -132,9 +132,6 @@ local scriptCombo = macro(100, "Combo", function()
     end
 end)
 
-addTextEdit("Spells", storage.Spellss or "", function(widget, text)
-  storage.Spellss = text
-end) 
 
 function sayMultipleSpells(spells)
   splitSpells = spells:split(",");
@@ -147,6 +144,11 @@ macro(200, "Ataque", function()
   if not g_game.isAttacking() then return; end
   sayMultipleSpells(storage.Spellss)
 end)
+
+addTextEdit("Spells", storage.Spellss or "Spells ", function(widget, text)
+  storage.Spellss = text
+end) 
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -374,23 +376,33 @@ macro(1000, function()
     doSwitch(g_window.isMaximized());
 end)
 
-local moneyIds = {3031, 3035, 12578} -- gold coin, platinium coin
+if type(storage.moneyItems) ~= "table" then
+    storage.moneyItems = {3031, 3035}
+end
 macro(1000, "Exchange money", function()
-  local containers = g_game.getContainers()
-  for index, container in pairs(containers) do
-    if not container.lootContainer then -- ignore monster containers
-      for i, item in ipairs(container:getItems()) do
-        if item:getCount() == 100 then
-          for m, moneyId in ipairs(moneyIds) do
-            if item:getId() == moneyId then
-              return g_game.use(item)            
-            end
-          end
+    if not storage.moneyItems[1] then return end
+    local containers = g_game.getContainers()
+    for index, container in pairs(containers) do
+        if not container.lootContainer then -- ignore monster containers
+            for i, item in ipairs(container:getItems()) do
+                if item:getCount() == 100 then
+                    for m, moneyId in ipairs(storage.moneyItems) do
+                        if item:getId() == moneyId.id then
+                            return g_game.use(item)
+                        end
+                    end
+                end
         end
-      end
+        end
     end
-  end
 end)
+
+local moneyContainer = UI.Container(function(widget, items)
+    storage.moneyItems = items
+end, true)
+moneyContainer:setHeight(35)
+moneyContainer:setItems(storage.moneyItems)
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -437,19 +449,20 @@ storage.widgetPos[name] = storage.widgetPos[name] or {};
 antiRedTimeWidget:setPosition({x = storage.widgetPos[name].x or 50, y = storage.widgetPos[name].y or 50});
 
 if (not getSpectators or #getSpectators(true) == 0) then
-  getSpectators = function()
-    local specs = {};
-    local tiles = g_map.getTiles(posz());
-    for i = 1, #tiles do
-      local tile = tiles[i];
-      local creatures = tile:getCreatures();
-      for _, spec in ipairs(creatures) do
-        table.insert(specs, creature);
-      end
+    getSpectators = function()
+        local specs = {};
+        local tiles = g_map.getTiles(posz());
+        for i = 1, #tiles do
+            local tile = tiles[i];
+            local creatures = tile:getCreatures();
+            for _, spec in ipairs(creatures) do
+                table.insert(specs, creature);
+            end
+        end
+        return specs;
     end
-    return specs;
-  end
 end
+
 
 if (not storage.antiRedTime or storage.antiRedTime - 30000 > now) then
   storage.antiRedTime = 0;
@@ -717,26 +730,26 @@ edit:hide()
 
 local showEdit = false
 ui.edit.onClick = function(widget)
-  showEdit = not showEdit
-  if showEdit then
-    edit:show()
-  else
-    edit:hide()
-  end
+    showEdit = not showEdit
+    if showEdit then
+        edit:show()
+    else
+        edit:hide()
+    end
 end
 -- End Basic UI
 
 -- Storage
 local st = "RevideFight"
 storage[st] = storage[st] or {
-  enabled = false,
-  pauseTarget = true,
-  pauseCave = true,
-  followTarget = true,
-  ignoreParty = false,
-  ignoreGuild = false,
-  attackAll = false,
-  esc = "Escape",
+    enabled = false,
+    pauseTarget = true,
+    pauseCave = true,
+    followTarget = true,
+    ignoreParty = false,
+    ignoreGuild = false,
+    attackAll = false,
+    esc = "Escape",
 }
 local config = storage[st]
 
@@ -744,65 +757,65 @@ local config = storage[st]
 -- Main Button
 ui.title:setOn(config.enabled)
 ui.title.onClick = function(widget)
-  config.enabled = not config.enabled
-  widget:setOn(config.enabled)
+    config.enabled = not config.enabled
+    widget:setOn(config.enabled)
 end
 
 -- Checkboxes
 do
-  edit.pauseTarget:setChecked(config.pauseTarget)
-  edit.pauseTarget.onClick = function(widget)
-    config.pauseTarget = not config.pauseTarget
-    widget:setChecked(config.pauseTarget)
-    widget:setImageColor(config.pauseTarget and "green" or "red")
-  end
-  edit.pauseTarget:setImageColor(config.pauseTarget and "green" or "red")
-  
-  edit.pauseCave:setChecked(config.pauseCave)
-  edit.pauseCave.onClick = function(widget)
-    config.pauseCave = not config.pauseCave
-    widget:setChecked(config.pauseCave)
-    widget:setImageColor(config.pauseCave and "green" or "red")
-  end
-  edit.pauseCave:setImageColor(config.pauseCave and "green" or "red")
+    edit.pauseTarget:setChecked(config.pauseTarget)
+    edit.pauseTarget.onClick = function(widget)
+        config.pauseTarget = not config.pauseTarget
+        widget:setChecked(config.pauseTarget)
+        widget:setImageColor(config.pauseTarget and "green" or "red")
+    end
+    edit.pauseTarget:setImageColor(config.pauseTarget and "green" or "red")
 
-  edit.followTarget:setChecked(config.followTarget)
-  edit.followTarget.onClick = function(widget)
-    config.followTarget = not config.followTarget
-    widget:setChecked(config.followTarget)
-    widget:setImageColor(config.followTarget and "green" or "red")
-  end
-  edit.followTarget:setImageColor(config.followTarget and "green" or "red")
+    edit.pauseCave:setChecked(config.pauseCave)
+    edit.pauseCave.onClick = function(widget)
+        config.pauseCave = not config.pauseCave
+        widget:setChecked(config.pauseCave)
+        widget:setImageColor(config.pauseCave and "green" or "red")
+    end
+    edit.pauseCave:setImageColor(config.pauseCave and "green" or "red")
 
-  edit.ignoreParty:setChecked(config.ignoreParty)
-  edit.ignoreParty.onClick = function(widget)
-    config.ignoreParty = not config.ignoreParty
-    widget:setChecked(config.ignoreParty)
-    widget:setImageColor(config.ignoreParty and "green" or "red")
-  end
-  edit.ignoreParty:setImageColor(config.ignoreParty and "green" or "red")
+    edit.followTarget:setChecked(config.followTarget)
+    edit.followTarget.onClick = function(widget)
+        config.followTarget = not config.followTarget
+        widget:setChecked(config.followTarget)
+        widget:setImageColor(config.followTarget and "green" or "red")
+    end
+    edit.followTarget:setImageColor(config.followTarget and "green" or "red")
 
-  edit.ignoreGuild:setChecked(config.ignoreGuild)
-  edit.ignoreGuild.onClick = function(widget)
-    config.ignoreGuild = not config.ignoreGuild
-    widget:setChecked(config.ignoreGuild)
-    widget:setImageColor(config.ignoreGuild and "green" or "red")
-  end
-  edit.ignoreGuild:setImageColor(config.ignoreGuild and "green" or "red")
+    edit.ignoreParty:setChecked(config.ignoreParty)
+    edit.ignoreParty.onClick = function(widget)
+        config.ignoreParty = not config.ignoreParty
+        widget:setChecked(config.ignoreParty)
+        widget:setImageColor(config.ignoreParty and "green" or "red")
+    end
+    edit.ignoreParty:setImageColor(config.ignoreParty and "green" or "red")
 
-  edit.attackAll:setChecked(config.attackAll)
-  edit.attackAll.onClick = function(widget)
-    config.attackAll = not config.attackAll
-    widget:setChecked(config.attackAll)
-    widget:setImageColor(config.attackAll and "green" or "red")
-  end
-  edit.attackAll:setImageColor(config.attackAll and "green" or "red")
+    edit.ignoreGuild:setChecked(config.ignoreGuild)
+    edit.ignoreGuild.onClick = function(widget)
+        config.ignoreGuild = not config.ignoreGuild
+        widget:setChecked(config.ignoreGuild)
+        widget:setImageColor(config.ignoreGuild and "green" or "red")
+    end
+    edit.ignoreGuild:setImageColor(config.ignoreGuild and "green" or "red")
+
+    edit.attackAll:setChecked(config.attackAll)
+    edit.attackAll.onClick = function(widget)
+        config.attackAll = not config.attackAll
+        widget:setChecked(config.attackAll)
+        widget:setImageColor(config.attackAll and "green" or "red")
+    end
+    edit.attackAll:setImageColor(config.attackAll and "green" or "red")
 end
 
 -- TextEdit
 edit.esc:setText(config.esc)
 edit.esc.onTextChange = function(widget, text)
-  config.esc = text
+    config.esc = text
 end
 edit.esc:setTooltip("Hotkey to cancel attack.")
 
@@ -813,65 +826,65 @@ local c = config
 
 -- Main Loop
 macro(250, function()
-  if not c.enabled then return end
-  if not target then
-    if c.pausedTarget then
-      c.pausedTarget = false
-      TargetBot.setOn()
-    end
-    if c.pausedCave then
-      c.pausedCave = false
-      CaveBot.setOn()
-    end
-    -- Search for attackers
-    local creatures = getSpectators(false)
-    for s, spec in ipairs(creatures) do
-      if spec ~= player and spec:isPlayer() then
-        if (c.attackAll and spec:getSkull() > 2) or spec:isTimedSquareVisible() then
-          if c.ignoreParty or spec:getShield() < 3 then
-            if c.ignoreGuild or not table.find(ignoreEmblems, spec:getEmblem()) then
-              target = spec:getName()
-              break
-            end
-          end
+    if not c.enabled then return end
+    if not target then
+        if c.pausedTarget then
+            c.pausedTarget = false
+            TargetBot.setOn()
         end
-      end
+        if c.pausedCave then
+            c.pausedCave = false
+            CaveBot.setOn()
+        end
+        -- Search for attackers
+        local creatures = getSpectators(false)
+        for s, spec in ipairs(creatures) do
+            if spec ~= player and spec:isPlayer() then
+                if (c.attackAll and spec:getSkull() > 2) or spec:isTimedSquareVisible() then
+                    if c.ignoreParty or spec:getShield() < 3 then
+                        if c.ignoreGuild or not table.find(ignoreEmblems, spec:getEmblem()) then
+                            target = spec:getName()
+                            break
+                        end
+                    end
+                end
+            end
+        end
+        return
     end
-    return
-  end
 
-  local creature = getPlayerByName(target)
-  if not creature then target = nil return end
-  if c.pauseTargetBot then
-    c.pausedTarget = true
-    TargetBot.setOff()
-  end
-  if c.pauseTarget then
-    c.pausedTarget = true
-    TargetBot.setOff()
-  end
-  if c.pauseCave then
-    c.pausedCave = true
-    CaveBot.setOff()
-  end
-
-  if c.followTarget then
-    g_game.setChaseMode(2)
-  end
-
-  if g_game.isAttacking() then
-    if g_game.getAttackingCreature():getName() == target then
-      return
+    local creature = getPlayerByName(target)
+    if not creature then target = nil return end
+    if c.pauseTargetBot then
+        c.pausedTarget = true
+        TargetBot.setOff()
     end
-  end
-  g_game.attack(creature)
+    if c.pauseTarget then
+        c.pausedTarget = true
+        TargetBot.setOff()
+    end
+    if c.pauseCave then
+        c.pausedCave = true
+        CaveBot.setOff()
+    end
+
+    if c.followTarget then
+        g_game.setChaseMode(2)
+    end
+
+    if g_game.isAttacking() then
+        if g_game.getAttackingCreature():getName() == target then
+            return
+        end
+    end
+    g_game.attack(creature)
 end)
 
 onKeyDown(function(keys)
-  if not c.enabled then return end
-  if keys == config.esc then
-    target = nil
-  end
+    if not c.enabled then return end
+    if keys == config.esc then
+        target = nil
+    end
 end)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
