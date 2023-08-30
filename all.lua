@@ -166,7 +166,7 @@ end)
 
 macro(100, "Senzu", function()
     if hppercent() < 100 or manapercent() < 95 then
-        if not (Config.cdSenzu or Config.cdSenzu <= now) then
+        if (not Config.cdSenzu or Config.cdSenzu <= now) then
             useWith(11862, player)
         end
     end
