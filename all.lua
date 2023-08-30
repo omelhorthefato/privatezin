@@ -324,6 +324,55 @@ macro(1, function()
         end
 end)
 
+g_window = modules._G.g_window;
+mapPanel = g_ui.getRootWidget():recursiveGetChildById("gameMapPanel");
+local switch;
+local removeThings = false;
+
+
+onAddThing(function(tile, thing)
+    if (not removeThings) then return; end
+    if (thing:isTile() or thing:isCreature()) then return; end
+    
+    
+    g_map.removeThing(thing);
+end)
+
+onAnimatedText(function(thing, text)
+    if (not removeThings) then return; end
+    g_map.removeThing(thing);
+end)
+
+onStaticText(function(thing, text)
+    if (not removeThings) then return; end
+    g_map.removeThing(thing);
+end)
+
+onMissle (function(thing)
+    if (not removeThings) then return; end
+    g_map.removeThing(thing);
+end)
+
+
+doSwitch = function(value)
+
+    if (value == switch) then return; end
+    
+    if (value == true) then
+        removeThings = false;
+        mapPanel:show();
+    else
+        removeThings = true;
+        mapPanel:hide();
+    end
+    switch = value;
+end
+
+
+macro(1000, function()
+    doSwitch(g_window.isMaximized());
+end)
+
 local moneyIds = {3031, 3035, 12578} -- gold coin, platinium coin
 macro(1000, "Exchange money", function()
   local containers = g_game.getContainers()
