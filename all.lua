@@ -88,7 +88,7 @@ vocacaoLogada = nil
 onTextMessage(function(mode, text)
     if notFound then return; end
     if vocacaoLogada then return; end
-    if text:find('You see') then
+    if text:find('mesmo') then
         local vocation = getVocationFromString(text)
         if vocation then
             vocacaoLogada = Config.Setup[vocation]
@@ -1012,7 +1012,10 @@ end)
 
 UI.Separator()
 
+local idGold = 3043
+
 macro(1, function()
+  if not (findItem(idGold) and itemAmount(idGold) > 3) then return; end
   if not getFinger() then
     NPC.say('!bol')
   end
