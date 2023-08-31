@@ -103,6 +103,7 @@ macro(100, function()
     if vocacaoLogada then return; end
     if not checkVoc then
         g_game.look(player)
+        modules.game_textmessage.clearMessages()
          checkVoc = true
     end
 end)
