@@ -167,10 +167,15 @@ end)
 macro(100, "Senzu", function()
     if hppercent() < 100 or manapercent() < 95 then
         if (not Config.cdSenzu or Config.cdSenzu <= now) then
-            useWith(11862, player)
+            useWith(tonumber(storage.idSenzu), player)
         end
     end
 end)
+
+addTextEdit("ID Senzu", storage.idSenzu or "Id Senzu", function(widget, text)
+    storage.idSenzu = text;
+end);
+
 
 macro(100, "Regeneration", function()
     if hppercent() >= 100 then return; end
