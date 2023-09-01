@@ -1020,6 +1020,10 @@ UI.Separator()
 
 local idGold = 3043
 
+function itemAmount(id)
+    return player:getItemsCount(id)
+end
+
 macro(1, function()
   if not (findItem(idGold) and itemAmount(idGold) > 3) then return; end
   if not getFinger() then
