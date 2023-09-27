@@ -537,8 +537,8 @@ end)
 local CONFIG = {
     BLESS_COMMAND = '!bless', -- comando p comprar a bless
     BLESS_PRICE = 10, -- golds
-    BLESS_MONEY = 'ja esta com bless', -- messagem se ja tem bless.
-    BLESS_NOTMONEY = 'gold coins to get', -- mensagem se não tem gold
+    BLESS_MONEY = 'voce ja tem bless', -- messagem se ja tem bless.
+    BLESS_NOTMONEY = 'voce nao tem dinheiro suficiente', -- mensagem se não tem gold
     UPDATE_GOLD = true, -- se estiver true, vai ficar atualizando a quantidade de gold
     ID_GOLD = 3043, -- id do gold
     ID_DOLLAR = 3035,  -- id do dolar
